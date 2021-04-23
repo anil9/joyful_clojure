@@ -93,16 +93,24 @@
   (get-full-name {:first-name \"Daniel\" :last-name \"King\"})
   -> \"Daniel King\""
   [user]
-  ;; TODO
-  )
+  (str (user :first-name) " " (user :last-name)))
 
 (defn get-ids
   "Given a vector of users, returns a list of the users' ids.
 
   Bonus points: Try doing this with loop/recur and with map."
   [users]
-  ;; TODO
-  )
+  (map :id users))
+
+
+
+
+(defn ok [body]
+  {:status 200 :body body})
+
+(defn not-found [body]
+  {:status 404 :body body})
+
 
 (defn http-handler
   "Given an http request, returns the response that should be
@@ -121,8 +129,16 @@
   Any other request should result in a 404 response
   with the text \"Not found\" in the body."
   [req]
-  ;; TODO
-  )
+  (let [method (req :method)
+        url (req :url)]
+    (cond
+      (and (= method :GET) (= url "/hello")) (ok "Hello world")
+      (and (= method :GET) (= url "/goodbye")) (ok "Goodbye world")
+      :else (not-found "Not found"))))
+
+
+
+
 
 (defn total-of-positives
   "Gets the sum of a sequence of numbers. Non-positive numbers
@@ -132,8 +148,10 @@
   (total-of-positives [1 5 -10 3 -2])
   -> 9"
   [nums]
-  ;; TODO
-  )
+  (->> nums
+       (filter pos?)
+       (reduce +)))
+
 
 (defn is-palindrome
   "Determines whether or not a given string is a palindrome.
@@ -142,9 +160,9 @@
   (is-palindrome \"Hello\") -> false
   (is-palindrome \"abcba\") -> true
   Challenge: (is-palindrome \"Taco Cat\") -> true"
-  [str]
-  ;; TODO
-  )
+  [text]
+  (= text (apply str (reverse text))))
+
 
 (defn caesar-encrypt
   "Takes a word and a number, and rotates each letter in the word
@@ -157,6 +175,12 @@
 
   Note: The name of the function comes from the fact that this transformation
   is known as a Caesar Cipher."
-  [word num-places]
-  ;; TODO
-  )
+  [word num-places])
+;TODO
+  ;(->> word
+  ;     (map #(+ num-places (int %)))
+  ;     (map #(if (>)))
+  ;     (map char)
+  ;     (apply str)))
+
+
