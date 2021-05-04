@@ -35,17 +35,20 @@
 
 (defn create-url-handler
   [req]
-  (println req)
   (let [url (get-in req [:body :url])
-        query-params (when (not (nil? (:query-string req))) (map/keywordize-keys (ring/form-decode (:query-string req))))
+        query-params (when (contains? req :query-string)
+                       (map/keywordize-keys (ring/form-decode (:query-string req))))
         id (:id query-params)]
     (try
       (if (nil? id)
         (let [row (create-url! url)]
-          {:status 201 :body row})
+          {:status 201
+           :body row})
         (let [row (create-url! url id)]
-          {:status 201 :body row}))
+          {:status 201
+           :body row}))
       (catch PSQLException e
-        (hash-map :status 409 :body (str (.getMessage e)))))))
+        (hash-map :status 409
+                  :body (str (.getMessage e)))))))
 
 
