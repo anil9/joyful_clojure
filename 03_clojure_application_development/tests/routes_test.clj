@@ -64,5 +64,23 @@
           created-response (first result)
           error-response (second result)]
       (is (= 201 (:status created-response)))
-      (is (= 409 (:status error-response))))))
-
+      (is (= 409 (:status error-response)))))
+  (testing "should delete an existing URL"
+    (let [create-req {:request-method :post
+                      :uri            "/urls"
+                      :body           {:url "https://website2you.com"}
+                      :query-string   "id=deleteMe"}
+          delete-req {:request-method :delete
+                      :uri            "/urls"
+                      :query-string   "id=deleteMe"}
+          _ (app create-req)
+          res (app delete-req)
+          query ["SELECT COUNT(*) FROM urls WHERE id = ?" "deleteMe"]
+          result (jdbc/query connection query)]
+      (is (= 200 (:status res)))
+      (is (= 0 (:count (first result))))))
+  (testing "should respond with status 400 when delete is missing an id param"
+    (let [delete-req {:request-method :delete
+                      :uri            "/urls"}
+          res (app delete-req)]
+      (is (= 400 (:status res))))))

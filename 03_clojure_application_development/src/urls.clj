@@ -51,4 +51,21 @@
         (hash-map :status 409
                   :body (str (.getMessage e)))))))
 
+(defn delete-by-id! [id]
+  (let [result (jdbc/delete! connection :urls ["id = ?" id])]
+    (prn "result: " result)))
+
+
+
+(defn delete-url-handler
+  [req]
+  (let [query-params (when (contains? req :query-string)
+                       (map/keywordize-keys (ring/form-decode (:query-string req))))
+        id (:id query-params)]
+    (if (or (nil? query-params) (nil? id))
+      {:status 400}
+      (try
+        (delete-by-id! id)
+        {:status 200}))))
+
 
